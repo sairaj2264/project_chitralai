@@ -28,10 +28,20 @@ function Dashboard() {
   const handleSelfieUpload = (event) => {
     if (event.target.files && event.target.files[0]) {
       setSelfie(URL.createObjectURL(event.target.files[0]));
-      // Here you would typically send the selfie for face matching
       console.log('Selfie uploaded:', event.target.files[0].name);
-      // Mock finding matches
-      // setMatchedImages([...some mock matched images...]);
+      // Simulate finding matches: take the first two event images as matches
+      if (eventImages.length > 0) {
+        setMatchedImages(eventImages.slice(0, 2)); // Show first two event images as mock matches
+        console.log('Mock matches found and set.');
+      } else {
+        // Fallback if eventImages isn't populated yet, or provide different mock data
+        setMatchedImages([
+            { id: 99, url: 'https://via.placeholder.com/300/CCCCCC/000000?Text=MatchedImage1', alt: 'Matched Image 1 (Fallback)' },
+            { id: 98, url: 'https://via.placeholder.com/300/AAAAAA/000000?Text=MatchedImage2', alt: 'Matched Image 2 (Fallback)' },
+        ]);
+        console.log('Mock matches found using fallback data.');
+      }
+      console.log('Backend call would happen here to save match data to DynamoDB and Google Sheets.');
     }
   };
 
@@ -76,8 +86,12 @@ function Dashboard() {
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">Matched Photos</h2>
         {matchedImages.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {/* Matched images will be mapped here */}
-            <p>Matched images will appear here.</p> 
+            {matchedImages.map(image => (
+              <div key={`match-${image.id}`} className="overflow-hidden rounded-lg shadow-lg">
+                <img src={image.url} alt={image.alt} className="w-full h-48 object-cover"/>
+                {/* Optionally, display more info about the match here */}
+              </div>
+            ))}
           </div>
         ) : (
           <p className="text-gray-500">No matches found yet. Upload your selfie to see results.</p>
